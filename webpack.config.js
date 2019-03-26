@@ -1,16 +1,20 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   mode: 'development',
   entry: path.resolve(__dirname, './src/index.jsx'),
   output: {
     path: path.resolve(__dirname, './public'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
+    publicPath: '/'
   },
   devServer: {
-    contentBase: `${__dirname}./index.html`,
+    historyApiFallback: true,
+    contentBase: path.join(__dirname, 'public'),
+    watchContentBase: true, // コンテンツの変更監視をする
     port: 3000
   },
   resolve: {
@@ -20,7 +24,6 @@ module.exports = {
       src: path.resolve(__dirname, 'src/')
     }
   },
-  plugins: [new HtmlWebpackPlugin({ template: './index.html' })],
   module: {
     rules: [
       {
@@ -34,7 +37,24 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
+      },
+      {
+        test: /\.(jpg|png)$/,
+        loaders: 'url-loader',
+        options: {
+          name: '[path][name].[ext]'
+        }
       }
     ]
-  }
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'style.css'
+    })
+  ]
 };
+// F8F8F8
